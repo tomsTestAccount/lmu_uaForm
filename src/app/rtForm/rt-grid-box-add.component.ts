@@ -23,11 +23,11 @@ const dbgPrint = false;
 //var css = require('./rtForm.css!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'rt-grid-box-add',
-    templateUrl: 'rt-grid-box-add.component.html',
+    templateUrl: 'rt-grid-box-add.component.html'
+    //styleUrls: ['../css/rtForm.css'],
     //template:html,
-    styleUrls: ['rtForm.css']
     //styles:[css]
 })
 
@@ -103,7 +103,7 @@ export class rtGridBoxAddComponent implements OnInit
 
         this.newAddObj = null;
 
-        this.currentUaFormObj = this._authService.auth_getFormObject();
+        //TODO this.currentUaFormObj = this._authService.auth_getFormObject();
 
         if (dbgPrint) console.log("In rtGridBoxAddComponent , this formgroup=",this.formgroup);
         if (dbgPrint) console.log("In rtGridBoxAddComponent , this formEntry=",this.formEntry);

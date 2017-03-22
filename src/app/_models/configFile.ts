@@ -1,8 +1,12 @@
-import { Inject } from '@angular/core';
+import { Injectable,Inject } from '@angular/core';
+
+
 
 var port = 8443;
 
 const dbgPrint = false;
+
+import {WindowRef} from '../_services/windowRef.service';
 
 
 export var constSrvUrl:any;
@@ -24,11 +28,16 @@ export class ServerConfigs {
     private serverURL : string;
     private host : string;
 
-    //constructor(@Inject(Window) private _window: Window)
-    constructor()
+    //constructor(@Inject(WindowRef) private _window: WindowRef)
+    //constructor(_window: Window)
+    constructor(private _window: WindowRef)
     {
-        /*this.host = _window.location.toString();
+        var window = _window.nativeWindow;
 
+        console.log("window=",window.location);
+
+        /*
+        this.host = _window.location.toString();
         var splitString = this.host.split('/');
         console.log("splitString=",splitString);
 
@@ -37,7 +46,6 @@ export class ServerConfigs {
 
 
         if (dbgPrint) console.log("host_port=",host_port);
-        */
 
         /*
 
@@ -52,23 +60,23 @@ export class ServerConfigs {
 
         */
 
-        var host = '192.168.159.130:8080';
+        //var host = '192.168.159.130:8080';
+        var host = 'localhost:8080';
 
+        /*
         var port;
-        /*if (protocol == 'http:')
+        if (protocol == 'http:')
             port = '8080';
         else
             port = '8443';
         */
 
+        var host = 'http://192.168.159.130:8080';
+
         //this.serverURL = protocol + '//' + host + ':' + port + '/Plone';
-
-
         //this.serverURL = protocol + '//' + host + '/Plone';
 
-
-        this.serverURL = 'http://' + host + '/Plone';
-
+        this.serverURL = host + '/Plone';
         if (dbgPrint)  console.log("serverURL=",this.serverURL);
 
         constSrvUrl = this.serverURL;

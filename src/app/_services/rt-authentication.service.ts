@@ -7,30 +7,24 @@ import {
 }  from '@angular/router';
 
 
-
 import 'rxjs/add/operator/map'
 import { Subject }    from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-
+import { Subscription }   from 'rxjs/Subscription';
 import {RestService} from './rt-rest.service';
 
-import { User } from '../_models/user';
-import {toPromise} from "rxjs/operator/toPromise";
+import {lmu_ua_formList} from '../_models/lmu_ua_formList'
+import {RtFormService} from '../_services/rt-forms.service'
 
 
-/*
-class cCurrentUser  {
-    token:string;
-    email:string;
-};
-*/
 
 const dbgPrint = false;
 const dbgPrint_user = false;
+const dbgPrint_userId = false;
 const dbgPrint_login = false;
-const dbgPrint_setFormObj = true;
-const dbgPrint_getFormObj = true;
-
+const dbgPrint_setFormObj = false;
+const dbgPrint_getFormObj = false;
+const dbgPrint_handleFormObj = false;
 
 @Injectable()
 export class AuthenticationService {
@@ -45,20 +39,16 @@ export class AuthenticationService {
 
     // Observable string sources for displayname
     private userDisplayNameSrc = new Subject<string>();
-
+    subscription: Subscription;
 
 
     // Observable string streams
     userDisplayName$ = this.userDisplayNameSrc.asObservable();
 
-    constructor(private http: Http,
-                private _rtRestService : RestService){
-
-        /*
-        this.auth_getCurrentUser();
-        this.auth_getFormObject();
-        this.isAuthenticated();
-        */
+    constructor(private _rtRestService : RestService
+               ,private _lmuForms : lmu_ua_formList
+                ,private _rtFormSrv: RtFormService
+    ){
 
 
         if (dbgPrint) console.log("_authenicated=",this._authenicated);
@@ -110,9 +100,8 @@ export class AuthenticationService {
                     {
                         let token = response['token'];
                         this.setCurrentToken_local(token);
-                        this._currentUserId = userId;
-
-                        //this.auth_getFormObject();
+                        //this._currentUserId = userId;
+                        this.auth_setCurrentUserId_local(userId);
 
                         //this.setProgressValue(100);
                         this.setProgressMode('determinate');
@@ -138,7 +127,7 @@ export class AuthenticationService {
                 this._rtRestService.restGet_getUserData(this._currentUserId, this._currentToken)
                     .subscribe(response => {
 
-                        console.log("In auth_getUserData, response=", response);
+                        if (dbgPrint_user) console.log("In auth_getUserData, response=", response);
                         this.setCurrentUser_local(response);
                         resolve(response);
 
@@ -175,10 +164,18 @@ export class AuthenticationService {
     isAuthenticated()
     {
 
-        //if (this._currentUserId && this._currentToken)
+        if (dbgPrint_user) console.log("this._currentUser=",this._currentUser);
+        if (dbgPrint_user) console.log("this._currentUserId=",this._currentUserId);
+        if (dbgPrint_user) console.log("this._currentToken=",this._currentToken);
 
         this.auth_getCurrentUser();
 
+        //within plone: the userId is sufficient
+        if (this._currentUserId) {
+            this._authenicated = true;
+        }
+
+        //within testServer: the token is necessary, and the userObj is helpful to give the name in the header
         if (this._currentUser)
         {
             //console.log("in isAuthenticated , this._currentUser=",this._currentUser);
@@ -235,82 +232,191 @@ export class AuthenticationService {
         return retValue;
     }
 
-
     auth_getCurrentUser():any
     {
 
-        if (dbgPrint_user) console.log("In auth_getCurrentUser");
-
         this._currentUser = (JSON.parse(localStorage.getItem('lmu_evfmsd_currentUser')));
 
+        if (dbgPrint_user) console.log("In auth_getCurrentUser",this._currentUser);
         return this._currentUser;
+    }
+
+    auth_getCurrentUserId():any
+    {
+
+        this._currentUserId = (JSON.parse(localStorage.getItem('lmu_evfmsd_currentUserId')));
+
+        if (dbgPrint_userId) console.log("In auth_getCurrentUserId,this._currentUserId=",this._currentUserId);
+        return this._currentUserId;
+    }
+
+    auth_setCurrentUserId_local(userId:string):any
+    {
+
+        this._currentUserId = userId;
+        if (dbgPrint_userId) console.log("In auth_setCurrentUser,this._currentUserId",this._currentUserId);
+        localStorage.setItem('lmu_evfmsd_currentUserId',JSON.stringify(this._currentUserId));
+
     }
 
     //-----------------------------------------------------------------------------------------------------------------
 
 
+
     auth_getFormObject():any
     {
 
-        if (dbgPrint_getFormObj) console.log("In authService 1,auth_getFormObject,this._currentFormObj=",this._currentFormObj);
 
-        if (dbgPrint_getFormObj) console.log("In authService 1,auth_getFormObject,localStorage.getItem('currentUaObject'=",localStorage.getItem('currentUaObject'));
 
-        if ((!this._currentFormObj)
-            || (this._currentFormObj === null)
-            || (typeof this._currentFormObj !== 'object')
-            || (Object.keys(this._currentFormObj ).length === 0))
-        {
+        return new Promise((resolve, reject) => {
+            if (dbgPrint_getFormObj) console.log("In authService 1,auth_getFormObject,this._currentFormObj=", this._currentFormObj);
 
-            let tmpUa = localStorage.getItem('currentUaObject');
+            if (dbgPrint_getFormObj) console.log("In authService 1,auth_getFormObject,localStorage.getItem('currentUaObject'=", localStorage.getItem('currentUaObject'));
 
-            if ((!tmpUa)
-                || (tmpUa === null)
-                || (typeof tmpUa !== 'object')
-                || (Object.keys(tmpUa).length === 0))
-            {
+            if ((!this._currentFormObj)
+                || (this._currentFormObj === null)
+                || (typeof this._currentFormObj !== 'object')
+                || (Object.keys(this._currentFormObj).length === 0)) {
 
-                if (dbgPrint_getFormObj) console.log("tmpUa 1=", tmpUa);
+                let tmpUa = localStorage.getItem('currentUaObject');
 
-                this.auth_getFormObject_Server(this._currentUser)
-                    .then(response => {
-                        if (response) {
+                if ((!tmpUa)
+                    || (tmpUa === null)
+                    || (typeof tmpUa !== 'object')
+                    || (Object.keys(tmpUa).length === 0)) {
 
-                            if (dbgPrint_getFormObj) console.log("In auth_getFormObject,after auth_getFormObject_Server response=", response, "this._currentFormObj=", this._currentFormObj);
-                            //this.auth_setFormObj(this._currentFormObj);
-                            return response;
-                        }
-                        /*else {
-                            }
-                            if (dbgPrint_getFormObj) console.log("In auth_getFormObject,after auth_getFormObject_Server response=", response);
-                            //this.auth_setFormObj({});
-                            */
-                        })
-                    .catch(exp => {
-                            console.log("in auth_getFormObject, error at auth_getFormObject_Server , err=", exp);
-                            //this.auth_setFormObj({});
-                        return {};
-                        }
-                    );
+                    if (dbgPrint_getFormObj) console.log("tmpUa 1=", tmpUa);
 
+                   // return new Promise((resolve, reject) => {
+                        this.auth_getFormObject_Server(this._currentUserId)
+                            .then(response => {
+                                if (response) {
+
+                                    if (dbgPrint_getFormObj) console.log("In auth_getFormObject,after auth_getFormObject_Server response=",
+                                        response, "this._currentFormObj=", this._currentFormObj);
+                                    this.auth_setFormObj(this._currentFormObj);
+                                    resolve(this._currentFormObj);
+                                }
+                                /*else {
+                                 }
+                                 if (dbgPrint_getFormObj) console.log("In auth_getFormObject,after auth_getFormObject_Server response=", response);
+                                 //this.auth_setFormObj({});
+                                 */
+                            })
+                            .catch(exp => {
+                                    console.log("in auth_getFormObject, error at auth_getFormObject_Server , err=", exp);
+                                    //this.auth_setFormObj({});
+                                    //return {};
+                                    resolve({});
+                                }
+                            );
+                    //});
+
+                }
+                else //found valid obj for currentUser in localStorage
+                {
+                    //this.auth_setFormObj(tmpUa);
+                    this._currentFormObj = JSON.parse(tmpUa);
+                    resolve(this._currentFormObj);
+                }
             }
-            else //found valid obj for currentUser in localStorage
-            {
-                //this.auth_setFormObj(tmpUa);
-                this._currentFormObj = JSON.parse(tmpUa);
-                return this._currentFormObj;
-            }
-        }
-        else return this._currentFormObj;
+            else resolve(this._currentFormObj);
+        });
 
     }
 
+    //to get valid formObject to work with on client-site (subFormGroup)
+    private auth_handleFormObject4localWorking(formObjFromServer) {
 
-    private auth_getFormObject_Server(currentUser):any{
+        if (dbgPrint_handleFormObj) console.log("In auth_handleFormObject4localWorking formObjFromServer=",formObjFromServer);
 
-        if (dbgPrint_getFormObj)  console.log("1 In  rt-auth-service: auth_getFormObject_Server ,currentUser=",currentUser);
+
+
+        var uaObject = {
+                subFormGroup_apd: {},
+                subFormGroup_ac: {},
+                subFormGroup_ac2: {},
+                subFormGroup_oi: {},
+            };
+            //check if formObject is valid
+            if ((typeof formObjFromServer === 'object') && (Object.keys(formObjFromServer).length !== 0))
+            {
+
+                console.log("formObjFromServer",formObjFromServer);
+                for (var p in formObjFromServer)
+                {
+                    //console.log("p=",p);
+                    this._lmuForms.set_formEntryValue(p.toString(),formObjFromServer[p]);
+                }
+
+
+                this._rtFormSrv.subFormsUpdated(true);
+
+                //let formEntries_ac = this._lmuForms.get_form_ac();
+
+
+                uaObject = {
+                    subFormGroup_apd: {
+                        firstname:formObjFromServer.firstname,
+                        lastname:formObjFromServer.lastname,
+                        gender:formObjFromServer.gender,
+                        dateOfbirth:formObjFromServer.dateOfbirth,
+                        nationality:formObjFromServer.nationality,
+                        street:formObjFromServer.street,
+                        postalcode:formObjFromServer.postalcode,
+                        residence:formObjFromServer.residence,
+                        country:formObjFromServer.country,
+                        phone:formObjFromServer.phone,
+                        phone2:formObjFromServer.phone2,
+                        email:formObjFromServer.email,
+                        email2:formObjFromServer.email2,
+                        homepage:formObjFromServer.homepage,
+                    },
+                    subFormGroup_ac: {
+
+
+
+
+                        ac_education:formObjFromServer.ac_education,
+                        ac_institution:formObjFromServer.ac_institution,
+                        ac_level:formObjFromServer.ac_level,
+                        copy_of_tor:formObjFromServer.copy_of_tor,
+                        //degree_conferral_date: degree_conferral_date,
+                        //copy_of_certificate: copy_of_certificate,
+
+
+                    },
+
+                    subFormGroup_ac2: {},
+                    subFormGroup_oi: {},
+
+                }
+
+
+            }
+            else
+            {
+                console.log("formObjFromServer is empty!!!!");
+                uaObject = {
+                    subFormGroup_apd: {},
+                    subFormGroup_ac: {},
+                    subFormGroup_ac2: {},
+                    subFormGroup_oi: {},
+                };
+
+
+            }
+
+        return uaObject;
+    };
+
+    private auth_getFormObject_Server(currentUserId):any{
+
+        if (dbgPrint_getFormObj)  console.log("1 In  rt-auth-service: auth_getFormObject_Server ,this._currentUserId=",this._currentUserId);
 
         let retValue=false;
+
+        this._currentUserId = 'mueller'; //Todo
 
         return new Promise((resolve, reject) => {
             this._rtRestService.restGet_formObject(this._currentUserId, this._currentToken)
@@ -325,6 +431,10 @@ export class AuthenticationService {
 
                         if (dbgPrint_getFormObj) console.log("In auth_getFormObject_Server after rest-call, uaObject=",uaObject);
 
+
+
+
+                        /*
                         if (!uaObject || Object.keys(uaObject).length === 0)  //NO object found at server
                         {
 
@@ -356,9 +466,14 @@ export class AuthenticationService {
                                     "So we have redefine it=", uaObject);
 
                             }
-                        }
 
-                        this.auth_setFormObj(uaObject);
+
+
+                        }
+                         */
+
+                        var sortedUaObject = this.auth_handleFormObject4localWorking(uaObject);
+                        this.auth_setFormObj(sortedUaObject);
                         resolve(true);
                     },
                     err => {

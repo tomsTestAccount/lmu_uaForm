@@ -76,12 +76,12 @@
                             [id]="formEntry.key"
                             formControlName={{formEntry.key}}
 
-                            dateFormat="dd.mm.yy"
+                            dateFormat="yy-mm-dd"
                             [monthNavigator]="true"
                             [yearNavigator]="true"
                             dataType="string"
                             yearRange="1950:2010"
-                            placeholder= "dd.mm.yyyy"
+                            placeholder= "yyyy.mm.dd"
                             [defaultDate]="dateValue"
                             required>
                     </p-calendar>
@@ -93,13 +93,13 @@
                     <p-calendar
                                 [id]="formEntry.key"
                                 formControlName={{formEntry.key}}
-                                dateFormat="dd.mm.yy"
+                                dateFormat="yy-mm-dd"
                                 [monthNavigator]="true"
                                 [yearNavigator]="true"
                                 dataType="string"
                                 yearRange="1950:2010"
                                 [defaultDate]="dateValue"
-                                placeholder= "dd.mm.yyyy"
+                                placeholder= "yyyy-mm-dd"
                                 >
                     </p-calendar>
                     <input class="notvisibleInput" formControlName={{formEntry.key}} value={{formgroup.controls[formEntry.key].value}} >

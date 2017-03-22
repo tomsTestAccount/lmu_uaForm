@@ -5,10 +5,7 @@ import {Validators, FormGroup,FormControl,FormBuilder} from '@angular/forms';
 import {rtFormValidators}  from '../_services/rt-form-validators.service';
 import {Location} from '@angular/common';
 
-//import {rtFormValidators}  from './_services/rt-form-validators.service';
-
 import {User, User4Create} from '../_models/user';
-
 
 import { RestService } from '../_services/rt-rest.service';
 
@@ -16,12 +13,12 @@ import { RestService } from '../_services/rt-rest.service';
 //var css = require('./rt-login.component.css!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'rt-login-form',
     //providers: [AuthenticationService],
     templateUrl :'rt-login.component.html',
-    //template:html,
     styleUrls: ['rt-login.component.css']
+    //template:html,
     //styles:[css]
     /*template: `
 <!--
@@ -186,7 +183,7 @@ export class LoginComponent implements OnInit{
 
     }
 
-    closeModal():void{
+    closeModal(gotoUrl?:string):void{
         this.bShowModal = false;
         this.error = '';
         this.result = '';
@@ -194,7 +191,10 @@ export class LoginComponent implements OnInit{
         this.createAccountForm.controls['lastName'].patchValue('');
         this.createAccountForm.controls['firstName'].patchValue('');
 
-        this.returnUrl = this.route.snapshot.params['from'] || '/startPage';
+        //this.returnUrl = this.route.snapshot.params['from'] || '/startPage';
+
+        this.returnUrl = gotoUrl || '/startPage';
+
         console.log("In closeModal: this.returnUrl=",this.returnUrl);
         console.log("In closeModal: params=",this.route.snapshot.params);
 
@@ -239,7 +239,7 @@ export class LoginComponent implements OnInit{
                         });
 
                     //this._router.navigate(['/userApplication']);
-                    //this.closeModal();
+                    this.closeModal('/userApplication');
                 })
                 .catch(error =>
                 {

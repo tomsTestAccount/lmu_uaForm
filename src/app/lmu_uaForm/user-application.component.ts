@@ -1,6 +1,6 @@
-//import { NgModule }      		from '@angular/core';
+import { Component,OnInit,AfterViewInit,HostListener,Input,OnChanges,SimpleChange } from '@angular/core';
 
-import { Component,OnInit,HostListener,Input,OnChanges,SimpleChange } from '@angular/core';
+
 import {Validators, FormGroup,FormControl,FormBuilder,FormArray} from '@angular/forms';
 
 
@@ -8,9 +8,15 @@ import {rtFormValidators}  from '../_services/rt-form-validators.service';
 import {lmu_ua_formList} from'../_models/lmu_ua_formList';
 import { RtFormService ,cFormObject} from '../_services/rt-forms.service';
 
+//import {UserService} from '../_services/rt-user.service';
+import { User } from '../_models/user';
+
 //import {Router,ActivatedRoute} from '@angular/router';
 
 import {AuthenticationService} from  '../_services/rt-authentication.service';
+
+//import { CountryList} from '../_models/countries';
+
 
 const dbgPrint = true;
 
@@ -29,12 +35,11 @@ import {timeout} from "rxjs/operator/timeout";
 //var css = require('./user-application.component.css!text');
 
 @Component({
-	//moduleId: module.id,
+	moduleId: module.id,
 	selector: 'my-userApplication',
-   // template:html,
-  templateUrl: 'user-application.component.html',
-  //  styles:[css]
-
+    //template:html,
+    //styles:[css]
+	templateUrl: 'user-application.component.html',
 	styleUrls: ['user-application.component.css'],
 	//for animations
 	/*animations: [
@@ -56,7 +61,9 @@ import {timeout} from "rxjs/operator/timeout";
 })
 
 
-export class UserApplicationComponent implements OnInit {
+
+
+export class UserApplicationComponent implements OnInit,AfterViewInit {
 
 	//usermodel : UserModel; // = {uid:42,surname : "Dampf", givenName : "hans", gender : 'male', dateOfBirth : { day:1, month:4, year:1980}};
 
@@ -94,7 +101,7 @@ export class UserApplicationComponent implements OnInit {
 
 	currentFormObject:cFormObject;
 	ac_formObj:cFormObject;
-    ac2_formObj:cFormObject;
+	ac2_formObj:cFormObject;
 	apd_formObj:cFormObject;
 	oi_formObj:cFormObject;
 
@@ -103,79 +110,49 @@ export class UserApplicationComponent implements OnInit {
 
 	currentUaObj:any;
 
-	dbgPrint =false;
-
+	dbgPrint =true;
 
     dbgFormValues =false;
 
 	changeDetected=false;
 
+	isFormUpdated = false;
+
 	//-------------------------------------------------------------------------------------------------------------------
 
 	constructor(private _fb: FormBuilder,
-				//private _rtRestService:UserService,
 				private _authService:AuthenticationService,
-			//	private _router:Router
+				private _rtFormSrv: RtFormService
 						)
     {
 
-        if (dbgPrint) console.log("In UserApplicationComponent constructor");
-
-        //this.countries = CountryList;
-
-
-		this.apd_formObj = this.lmu_ua_form.buildFormObject_apd();
-		this.ac_formObj = this.lmu_ua_form.buildFormObject_ac();
-        this.ac2_formObj = this.lmu_ua_form.buildFormObject_ac2();
-		this.oi_formObj = this.lmu_ua_form.buildFormObject_oi();
-
-		/*
-		// we will initialize our main-lmu-ua-form in lmu_ua_formList
-		this.main_lmu_ua_form = this._fb.group({
-
-			subFormGroup_apd: this._fb.group([this.apd_formObj.formgroup,Validators.required]),
-			subFormGroup_ac: this._fb.group([this.ac_formObj.formgroup,Validators.required]),
-			subFormGroup_oi: this._fb.group([this.oi_formObj.formgroup,Validators.required]),
-            subFormGroup_ac2: this._fb.group([this.ac2_formObj.formgroup,Validators.required])
-
-		});
+        /*this._rtFormSrv.subFormAnnounced_apd$.subscribe(
+            newform => {
+                (this.main_lmu_ua_form.controls['subFormGroup_apd']) = newform.formgroup;
+                if (dbgPrint) console.log("In apd_subscribe");
+            });
         */
 
+        this._rtFormSrv.subFormIsUpdated$.subscribe(
+            isUpdated => {
+
+                this.main_lmu_ua_form = this.lmu_ua_form.init_mainForm();
+                if (dbgPrint) console.log("In subFormIsUpdated$ ",this.main_lmu_ua_form);
+                this.isFormUpdated = isUpdated;
+            });
+
+        if (dbgPrint) console.log("In UserApplicationComponent constructor");
+
+        //we get the formEntries here
+        this.apd_formObj = this.lmu_ua_form.buildFormObject_apd();
+        this.ac_formObj = this.lmu_ua_form.buildFormObject_ac();
+        this.ac2_formObj = this.lmu_ua_form.buildFormObject_ac2();
+        this.oi_formObj = this.lmu_ua_form.buildFormObject_oi();
+
+
+        //this.lmu_ua_form.init_mainForm();
         this.main_lmu_ua_form = this.lmu_ua_form.get_mainForm();
 
-		let currentUser= this._authService.auth_getCurrentUser();
-        if (dbgPrint) console.log("In user-application ngOnInit , currentUser=",currentUser);
-
-
-        //timeout(2000);
-
-		this.currentUaObj = this._authService.auth_getFormObject();
-
-
-        if (dbgPrint) console.log("In user-application ngOnInit , currentUaObject=",this.currentUaObj);
-
-
-		/*
-		if (Object.keys(this.currentUaObj).length === 0) //check if empty
-		{
-
-			this._authService.getUaObjectByRest(currentUser);
-		}
-		else //if (!this.changeDetected)
-		{
-			this.setFormValues_AlreadyFilled();
-		}
-		*/
-
-
-
-        if (this.currentUaObj) {
-            if (Object.keys(this.currentUaObj).length !== 0) {
-                if (dbgPrint) console.log("In user-application ngOnInit: this.main_lmu_ua_form=", this.main_lmu_ua_form);
-                this.setFormValues_AlreadyFilled();
-            }
-        }
-        //this.main_lmu_ua_form.valueChanges.subscribe(data => this.formValueChanged(data));
 
 	};
 
@@ -187,28 +164,129 @@ export class UserApplicationComponent implements OnInit {
 	}
 	*/
 
+    ngOnInit(): void {
 
-	ngOnInit(): void {
+
+    }
 
 
-        if (this.dbgPrint) console.log("In user-application ngOnInit!");
+    ngAfterViewInit(): void {
 
-		/*this.userdataservice.getUserModel(1).then(
-			usermodel => this.usermodel = usermodel);
-			*/
+
+        if (this.dbgPrint) console.log("In user-application ngAfterViewInit!");
 
 		this.uasubmit = false;
 
-    var cookies = document.cookie;
+        this._authService.auth_getFormObject()
+            .then(response => {
 
-    console.log("cookies = ",document.cookie);
+                /*
+                //init the forms
 
-		/*
-		this._router.events.subscribe(path => {
-			console.log('path = ', path);
-		});
+                this.lmu_ua_form.init_mainForm();
+                this.main_lmu_ua_form = this.lmu_ua_form.get_mainForm();
+
+
+                this.apd_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_apd'];
+                this.ac_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_ac'];
+                this.ac2_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_ac2'];
+                this.oi_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_oi'];
+
+                */
+
+                if (this.dbgPrint) console.log("In user-application ngAfterViewInit2, after get data!");
+            });
+
+        /*
+         this.apd_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_apd'];
+         this.ac_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_ac'];
+         this.ac2_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_ac2'];
+         this.oi_formObj.formgroup = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_oi'];
          */
-	}
+
+        //let currentUser= this._authService.auth_getCurrentUser();
+        //if (dbgPrint) console.log("In user-application ngOnInit , currentUser=",currentUser);
+
+
+        /*
+         this.currentUaObj = this._authService.auth_getFormObject();
+
+         if (dbgPrint) console.log("In user-application ngOnInit , currentUaObject=",this.currentUaObj);
+
+
+         if (this.currentUaObj) {
+         if (Object.keys(this.currentUaObj).length !== 0) {
+         if (dbgPrint) console.log("In user-application ngOnInit: this.main_lmu_ua_form=", this.main_lmu_ua_form);
+         this.setFormValues_AlreadyFilled();
+         }
+         }
+         */
+
+
+        /*
+         if (Object.keys(this.currentUaObj).length === 0) //check if empty
+         {
+
+         this._authService.getUaObjectByRest(currentUser);
+         }
+         else //if (!this.changeDetected)
+         {
+         this.setFormValues_AlreadyFilled();
+         }
+         */
+
+        //this.main_lmu_ua_form.valueChanges.subscribe(data => this.formValueChanged(data));
+
+
+
+        /*
+        if (this._authService.isAuthenticated)
+        {
+            let currentUserId = this._authService.auth_getCurrentUserId();
+            if (dbgPrint) console.log("In user-application ngOnInit , user is authenticated,currentUserId=",currentUserId);
+        }
+        else
+        {
+            if (dbgPrint) console.log("In user-application ngOnInit , user is NOT authenticated !!!");
+        }
+
+
+        //this.currentUaObj = this._authService.auth_getFormObject()
+        this._authService.auth_getFormObject().then(response =>
+        {
+            this.currentUaObj = response;
+
+            if (dbgPrint) console.log("In user-application ngOnInit , currentUaObject=",this.currentUaObj);
+
+            if (this.currentUaObj) {
+                if (Object.keys(this.currentUaObj).length !== 0) {
+                    if (dbgPrint) console.log("In user-application ngOnInit: this.main_lmu_ua_form=", this.main_lmu_ua_form);
+                    this.setFormValues_AlreadyFilled();
+
+                    if (dbgPrint) console.log("this.main_lmu_ua_form.controls['subFormGroup_apd']=",this.main_lmu_ua_form.controls['subFormGroup_apd']);
+
+                }
+            }
+            else
+            {
+
+            }
+
+
+
+        });
+        .catch(exp => {
+         console.log("in auth_getFormObject, error at auth_getFormObject_Server , err=", exp);
+         //this.auth_setFormObj({});
+         return {};
+         }
+         );
+
+
+        */
+
+
+    }
 
 	setFormValues_AlreadyFilled()
 	{
@@ -221,11 +299,36 @@ export class UserApplicationComponent implements OnInit {
             console.log("In setFormValues_AlreadyFilled,this.currentUaObj.subFormGroup_ac2=", this.currentUaObj.subFormGroup_ac2);
             console.log("In setFormValues_AlreadyFilled,this.currentUaObj.subFormGroup_oi=", this.currentUaObj.subFormGroup_oi);
         }
-		this.main_lmu_ua_form.controls['subFormGroup_apd'].patchValue(this.currentUaObj.subFormGroup_apd);
+
+        this.main_lmu_ua_form.controls['subFormGroup_apd'].patchValue(this.currentUaObj.subFormGroup_apd);
         this.main_lmu_ua_form.controls['subFormGroup_ac'].patchValue(this.currentUaObj.subFormGroup_ac);
         this.main_lmu_ua_form.controls['subFormGroup_oi'].patchValue(this.currentUaObj.subFormGroup_oi);
         this.main_lmu_ua_form.controls['subFormGroup_ac2'].patchValue(this.currentUaObj.subFormGroup_ac2);
 
+
+        /*
+        var tmp_apdSubForm = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_apd']['controls']['0'];
+        if (dbgPrint) console.log("tmp_apdSubForm=",tmp_apdSubForm);
+
+        for (var p in this.currentUaObj.subFormGroup_apd) {
+            tmp_apdSubForm.controls[p.toString()].patchValue(this.currentUaObj.subFormGroup_apd[p.toString()]);
+        }
+        */
+
+
+        /*
+        var tmp_apdSubForm = <FormGroup>this.main_lmu_ua_form.controls['subFormGroup_apd']['controls']['0'];
+        for (var p in this.currentUaObj.subFormGroup.pe) {
+            tmp_apdSubForm.controls[p.toString()].patchValue(this.currentUaObj.subFormGroup_apd[p.toString()]);
+        }
+        */
+
+        //var tmp_apdForm : FormGroup = <FormGroup>(this.main_lmu_ua_form.controls['subFormGroup_apd']);
+        //tmp_apdForm.controls['firstname'].patchValue(this.currentUaObj.subFormGroup_apd.firstname);
+
+        //this.main_lmu_ua_form.controls['subFormGroup_apd'].controls['firstname'].patchValue(this.currentUaObj.subFormGroup_apd.firstname);
+
+        if (dbgPrint) console.log("this.main_lmu_ua_form.controls['subFormGroup_apd']=",this.main_lmu_ua_form.controls['subFormGroup_apd']);
 	}
 
 	select_comp4User(current_ua_sec: string)

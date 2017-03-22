@@ -4,12 +4,6 @@ import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { User,User4Create } from '../_models/user';
 import {Observable} from "rxjs/Observable";
 
-
-//import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-//import {Router, ActivatedRoute, __router_private__} from '@angular/router';
-
-
-// Import RxJs required methods
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/timeout';
@@ -17,6 +11,8 @@ import 'rxjs/add/operator/timeout';
 import {ServerConfigs} from '../_models/configFile';
 import {Body} from "@angular/http/src/body";
 
+
+const dbgPrint_getUser = true;
 
 @Injectable()
 export class RestService {
@@ -28,13 +24,8 @@ export class RestService {
     {
         this.serverURL = serverConfs.get_serverConfigs().url;
 
-
         console.log("serverURL=",this.serverURL);
     }
-
-
-
-
 
 
 	/*********************************** PLONE-RESTAPI **************************************************************/
@@ -122,7 +113,7 @@ export class RestService {
 
         let headers = new Headers();
         headers.append('Content-type', 'application/json');
-        headers.append('Authorization','Bearer ' + token);
+        //headers.append('Authorization','Bearer ' + token);
 
         let body = JSON.stringify(userData);
 
@@ -144,9 +135,9 @@ export class RestService {
 
         let headers = new Headers();
         headers.append('Accept', 'application/json');
-        headers.append('Authorization','Bearer ' + token); //'Authorization':'Bearer '
+        //headers.append('Authorization','Bearer ' + token); //'Authorization':'Bearer '
 
-        console.log("in restService,auth_getFormObject: user=",userId);
+        if (dbgPrint_getUser) console.log("in restService,auth_getFormObject: userId=",userId);
         return this.http.get(this.serverURL + '/applications/'+ userId +'/'+userId              //url req-main
                                                                             //url req-sub
             ,{headers:headers}  // ,({headers: new Headers({'Authorization':token}) }) //({'Authorization':'Bearer ' + token})                                          //header

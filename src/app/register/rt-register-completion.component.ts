@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, Params, Data } from '@angular/router';
 //var html = require('./rt-register-completion.component.html!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'rt-register-completion',
     templateUrl: 'rt-register-completion.component.html'
     //template:html,

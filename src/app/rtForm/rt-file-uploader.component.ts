@@ -17,12 +17,11 @@ const dbgPrint = false;
 //var css = require('./rtForm.css!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'rt-file-uploader',
-
-    templateUrl: 'rt-file-uploader.component.html',
+    templateUrl: 'rt-file-uploader.component.html'
+    //styleUrls: ['../css/rtForm.css'],
     //template:html,
-    styleUrls: ['rtForm.css']
     //styles:[css]
 
 })

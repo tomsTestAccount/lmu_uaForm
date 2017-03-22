@@ -1,4 +1,4 @@
-import { Component,OnInit,AfterViewChecked,HostListener,Input ,NgZone,ElementRef} from '@angular/core';
+import { Component,OnInit,AfterViewInit,HostListener,Input ,NgZone,ElementRef} from '@angular/core';
 
 import {Validators, FormGroup,FormControl,FormBuilder} from '@angular/forms';
 
@@ -23,8 +23,11 @@ import {
 
 //var html = require('./ua-pe.component.html!text');
 
+
+const dbgPrint_Pe =true;
+
 @Component({
-	//moduleId: module.id,
+	moduleId: module.id,
 	selector: 'lmu_user_pe',
     //template:html,
 	templateUrl: 'ua-pe.component.html',
@@ -43,9 +46,11 @@ export interface Avgr2Obj {
 
 
 
+
+
 //---------------------------------------------------------
 
-export class LmuUserPeComponent implements OnInit{
+export class LmuUserPeComponent implements AfterViewInit{
 
 	peForm : FormGroup;
 
@@ -136,12 +141,12 @@ export class LmuUserPeComponent implements OnInit{
     ac2Open = false;
 	//----------------------------------------------------
 
-	dbgPrint:boolean=false;
+
 
 	currentForm:FormGroup;
     @Input() set setForm(givenForm: FormGroup){
 
-        if (this.dbgPrint) console.log("givenForm=",givenForm);
+        if (dbgPrint_Pe) console.log("givenForm=",givenForm);
         this.currentForm = <FormGroup>givenForm.controls[0];
         //this.currentForm = givenForm;
 
@@ -160,7 +165,7 @@ export class LmuUserPeComponent implements OnInit{
 
 
         this.currentForm2 = <FormGroup>givenForm.controls[0];
-        if (this.dbgPrint) console.log("this.currentFormObject2=",this.currentForm2);
+        if (dbgPrint_Pe) console.log("this.currentFormObject2=",this.currentForm2);
         let formCtrls = this.currentForm2['controls'];
         for (let key in formCtrls)
         {
@@ -170,7 +175,7 @@ export class LmuUserPeComponent implements OnInit{
                 formCtrls[key].value!== [] &&
                 formCtrls[key].value !== 'undefined')
             {
-                //if (this.dbgPrint)
+                //if (dbgPrint_Pe)
                     console.log("formCtrl.value = ", formCtrls[key].value," for ",key);
                 this.ac2Open = true;
             }
@@ -183,59 +188,11 @@ export class LmuUserPeComponent implements OnInit{
 
         this.currentFormEntries2 = formEntries;
 
-        if (this.dbgPrint) console.log("this.currentFormEntries=",this.currentFormEntries2);
+        if (dbgPrint_Pe) console.log("this.currentFormEntries=",this.currentFormEntries2);
     };
 
 
 	constructor(private fb: FormBuilder) {
-
-		/*this.countries = CountryList;
-
-		this.dbgIsOpen = false;
-		//file-upload init
-		this.zone = new NgZone({ enableLongStackTrace: false });
-
-		this.uploadedData_Degree = new Array(); //TODO: load via restApi (Mock first)
-		this.options_degreeUpload= {
-			url: 'http://localhost:3001/upload',
-			filterExtensions: true,
-			allowedExtensions: ['application/pdf'],
-			calculateSpeed: true,
-		};
-		this.uploadedData_transcriptOrOtherGrades = new Array();
-		this.options_transcriptOrOtherGrades = {
-			url: 'http://localhost:3001/upload',
-			filterExtensions: true,
-			allowedExtensions: ['application/pdf','image/jpeg','image/png' ],
-			calculateSpeed: true,
-		}
-		//this.avgr2_courseList = Avgr2Obj[];
-		//this.avgr2_newCourseObj = {name:"",ects:0,grade:0};
-
-		this.avgr2_courseList = new Array() ;
-		this.avgr2_courseComplete = false;
-
-
-		this.avgr3_courseList = new Array() ;
-		this.avgr3_courseComplete = false;
-
-
-		this.uploadedData_proofEnglish = new Array();
-		this.options_proofEnglish = {
-			url: 'http://localhost:3001/upload',
-			filterExtensions: true,
-			allowedExtensions: ['application/pdf','image/jpeg','image/png' ],
-			calculateSpeed: true,
-		}
-		*/
-
-		//this.currentFormObject = this.lmu_ua_form.buildFormObject_ac();
-
-        //this.ac2_formObj = this.lmu_ua_form.buildFormObject_ac2();
-
-
-
-
 
 	}
 
@@ -263,235 +220,21 @@ export class LmuUserPeComponent implements OnInit{
 	}
 	*/
 
-	ngOnInit(): void {
 
+    ngAfterViewInit():void{
+	//ngOnInit(): void {
 
-		//if (this.dbgPrint)
-        if (this.dbgPrint) console.log("In LmuUserPeComponent,OnInit ac this.currentFormObject=",this.currentFormObject);
-        if (this.dbgPrint) console.log("In LmuUserPeComponent,OnInit ac this.currentFormEntries=",this.currentFormEntries);
+		//if (dbgPrint_Pe)
+        if (dbgPrint_Pe) console.log("In LmuUserPeComponent,ngAfterViewInit ac this.currentFormObject=",this.currentFormObject);
+        if (dbgPrint_Pe) console.log("In LmuUserPeComponent,ngAfterViewInit ac this.currentFormEntries=",this.currentFormEntries);
 
 		//this.buildForm();
 		//this.isDragDropAvailable();
 
-        console.log("this.ac2Open",this.ac2Open);
+        if (dbgPrint_Pe) console.log("In LmuUserPeComponent,ngAfterViewInit this.ac2Open",this.ac2Open);
 	}
 
-	/*
-	buildForm(): void {
 
-
-		this.peForm = this.fb.group({
-			'acadEdu': ['', Validators.compose([Validators.required,Validators.minLength(3)])],
-			'acadLvl': ['', Validators.compose([Validators.required,Validators.minLength(3)])],
-			'acadInst': ['', Validators.compose([Validators.required,Validators.minLength(3)])],
-			'degreeConferralDate': ['', Validators.compose([Validators.required,Validators.minLength(3)])],
-			'copyOfDegreeCert': [[], Validators.compose([Validators.required,this.rtValidators.validateArray])],
-			'degreeCertAvailable': [true, Validators.required],
-			'transcriptOrOtherGrades': [[], Validators.compose([Validators.required,this.rtValidators.validateArray])],
-			'avGr1_bestPerf': ['', Validators.compose([Validators.required,Validators.minLength(1)])],
-			'avGr2_computationalMethods': [[], Validators.compose([Validators.required,this.rtValidators.validateArray])],
-			'avGr3_dataBasedModelling': [[], Validators.compose([Validators.required,this.rtValidators.validateArray])],
-			//'bachDegreeFromLMU': false,
-			'typeOfInst4bach': ['', Validators.compose([Validators.required,Validators.minLength(3)])],
-			'proofOfEnglishProficiency' : [[], Validators.compose([Validators.required,this.rtValidators.validateArray])]
-		});
-
-
-		this.peForm.statusChanges.subscribe(data => this.onFormStatusChanged(data));
-
-
-		this.peForm_inner = this.fb.group({
-			'name':'',
-			'ects':'',
-			'grade':''
-		})
-
-		this.peForm_inner.statusChanges.subscribe(data => this.onFormStatusChanged_2(data));
-
-
-
-
-		this.formEntries = [
-			{   formgroup : this.peForm,
-				key : 'acadEdu',
-				title : 'Academic Education *',
-				type: 'textarea',
-				required: true
-			},
-			{   formgroup : this.peForm,
-				key : 'acadLvl',
-				title : 'Academic Level *',
-				type: 'textarea',
-				required: true
-			},
-			{   formgroup : this.peForm,
-				key : 'acadInst',
-				title : 'Academic Institution *',
-				type: 'textarea',
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'degreeConferralDate',
-				title : 'Degree Conferral Date *',
-				type: 'date',
-				required: true
-			},
-
-			{
-				formgroup : this.peForm,
-				key : 'copyOfDegreeCert',
-				title : 'Copy of Degree Certificate (e.g. Bachelor) *',
-				type: 'fileUpload',
-				options: {
-					url: 'http://localhost:3001/upload',
-					filterExtensions: true,
-					allowedExtensions: ['application/pdf'],
-					calculateSpeed: true,
-					},
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'transcriptOrOtherGrades',
-				title : 'Transcript of Records or Other Proof of Grades *',
-				type: 'fileUpload',
-				options: {
-					url: 'http://localhost:3001/upload',
-					filterExtensions: true,
-					allowedExtensions: ['application/pdf','image/jpeg','image/png' ],
-					calculateSpeed: true,
-				},
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'avGr1_bestPerf',
-				title : 'Average Grade of the Best Performance = AvGr1 *',
-				type: 'number',
-				secParagraphArray: [`Please calculate the average grade from the best performance (equivalent to 150 ECTS) and enter this in the field below.`,
-					`Note: Applicants whose Transcript of Records does not include ECTS: A 6-semester study program equals a workload of 180 ECTS.`,
-					`Divide this workload between the different courses you took during your study program and upload your calculation at the end of this online application in the field Other documents`],
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'avGr2_computationalMethods',
-				title : 'Computational Methods = AvGr2 *',
-				secParagraphArray: ['Please enter the courses you attended in Computational Methods', '(this includes, for example, informatics, database-orientated methods, computational statistics, optimisation)'],
-				type: 'grid-box-add',
-				options: {
-					whatToAdd: 'Course', // string for the element to add
-					allCols: 7,   // realAllCols - allCols = reservedCols e.g.  9-7 = 2; 2 cols are reserved for the add-button, see the number of cols of the gridCells below
-					rowHeight: '42px',
-					gridCells: [{
-							rows: 1,
-							cols: 3,
-							title : 'Course Name',
-							//secParagraph: 'E.g.: Database Systems',
-							id: 'name', //need for iteration in component.ts, has to be distinct for that entry
-							type:'text',
-							placeHolder : 'E.g.: Database Systems'
-
-						},
-						{
-							rows: 1,
-							cols: 2,
-							title : 'ECTS',
-							//secParagraph:  'E.g.: 6 or 4.5',
-							id: 'ects', //need for iteration in component.ts, has to be distinct for that entry
-							type:'number',
-							placeHolder: 'E.g.: 6 or 4.5'
-						},
-						{
-							rows: 1,
-							cols: 2,
-							title : 'Grade',
-							//secParagraph:  'E.g.: 1.5',
-							id: 'grade', //need for iteration in component.ts, has to be distinct for that entry
-							type:'number',
-							placeHolder: 'E.g.: 1.5'
-						}],
-				},
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'avGr3_dataBasedModelling',
-				title : 'Data-Based Modelling = AvGr 3 *',
-				secParagraphArray: ['Please enter the courses you attended in Data-Based Modelling',' (this includes, for example, statistics, data mining, probability theory, machine learning)'],
-				type: 'grid-box-add',
-				options: {
-					whatToAdd: 'Course', // string for the element to add
-					allCols: 7,   //9-7 = 2; 2 cols are reserved for the add-button, see the number of cols of the gridCells below
-					rowHeight: '42px',
-					gridCells: [{
-						rows: 1,
-						cols: 3,
-						title : 'Course Name',
-						//secParagraph: 'E.g.: Database Systems',
-						id: 'name', //need for iteration in component.ts, has to be distinct for that entry
-						type:'text',
-						placeHolder : 'E.g.: Database Systems'
-
-					},
-						{
-							rows: 1,
-							cols: 2,
-							title : 'ECTS',
-							//secParagraph:  'E.g.: 6 or 4.5',
-							id: 'ects', //need for iteration in component.ts, has to be distinct for that entry
-							type:'number',
-							placeHolder: 'E.g.: 6 or 4.5'
-						},
-						{
-							rows: 1,
-							cols: 2,
-							title : 'Grade',
-							//secParagraph:  'E.g.: 1.5',
-							id: 'grade', //need for iteration in component.ts, has to be distinct for that entry
-							type:'number',
-							placeHolder: 'E.g.: 1.5'
-						}],
-				},
-				required: true
-			},
-			{   formgroup : this.peForm,
-				key : 'typeOfInst4bach',
-				title : "Institution at which Bachelor's Degree was Received *",
-				type: 'select',
-				options : [
-					{
-						name : 'LMU'
-					},
-					{
-						name : 'other University'
-					},
-					{
-						name : 'University of Applied Sciences'
-					},
-					{
-						name : 'Other kind of Institution'
-					}
-				],
-				required: true
-			},
-			{
-				formgroup : this.peForm,
-				key : 'proofOfEnglishProficiency',
-				title : 'Proof of English Language Proficiency *',
-				type: 'fileUpload',
-				options: {
-					url: 'http://localhost:3001/upload',
-					filterExtensions: true,
-					allowedExtensions: ['application/pdf','image/jpeg','image/png' ],
-					calculateSpeed: true,
-				},
-				required: true
-			}
-		]
-	}
-	*/
 
 	onFormStatusChanged(data)
 	{
@@ -534,9 +277,9 @@ export class LmuUserPeComponent implements OnInit{
 	onChange(e:any):void{
 		//this.opeForm.controls.copyOfDegreeCert_ope._onChange(e);
 		//(<FormControl>this.opeForm.controls['copyOfDegreeCert_ope']).patchValue(e.value);
-		if (this.dbgPrint) console.log((<FormControl>this.peForm.controls['typeOfInst4bach']));
-		if (this.dbgPrint) console.log("e=",e);
-		if (this.dbgPrint) console.log("this.peForm=",this.peForm);
+		if (dbgPrint_Pe) console.log((<FormControl>this.peForm.controls['typeOfInst4bach']));
+		if (dbgPrint_Pe) console.log("e=",e);
+		if (dbgPrint_Pe) console.log("this.peForm=",this.peForm);
 	}
 
 	//----------- has previous degree yet section

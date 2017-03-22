@@ -69,8 +69,8 @@
                               [style.border-top-left-radius]="' 0.25rem'">
                     <md-list [style.padding]="'0'"  layout="row" layout-align="center center">
                         <md-list-item>
-                            <p  md-line class="form_gridList_mdList_mainParagraph">File Name</p>
-                            <p  md-line class="form_gridList_mdList_secParagraph"> Saving Date, Size </p>
+                            <p  md-line class="form_gridList_mdList_mainParagraph" [style.margin-bottom]="'0'">File Name</p>
+                            <p  md-line class="form_gridList_mdList_secParagraph" [style.margin-bottom]="'0'"> Saving Date, Size </p>
                         </md-list-item>
                     </md-list>
                 </md-grid-tile>
@@ -130,8 +130,8 @@
                         class="my-grid-list-text-align-left">
                     <md-list [style.padding]="'0'" [style.justify-content]="'flex-start'">
                         <md-list-item >
-                            <p  md-line class="form_gridList_mdList_mainParagraph_sm">{{file.originalName}}</p>
-                            <p  md-line class="form_gridList_mdList_secParagraph_sm"> {{file.endTime | date:'yyyy-MM-dd HH:mm:ss'}} , {{getFileSize(file.size)}} </p>
+                            <p  md-line class="form_gridList_mdList_mainParagraph_sm" [style.margin-bottom]="'0'">{{file.originalName}}</p>
+                            <p  md-line class="form_gridList_mdList_secParagraph_sm" [style.margin-bottom]="'0'"> {{file.endTime | date:'yyyy-MM-dd HH:mm:ss'}} , {{getFileSize(file.size)}} </p>
                         </md-list-item>
                     </md-list>
                 </md-grid-tile>

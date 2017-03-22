@@ -6,13 +6,12 @@ import { FormGroup,FormControl,FormBuilder }        from '@angular/forms';
 //var css = require('./rtForm.css!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'rt-input',
     //template:html,
-    templateUrl: 'rt-input.component.html',
-    styleUrls: ['rtForm.css']
+    //styleUrls: ['../css/rtForm.css']
     //styles:[css]
-
+    templateUrl: 'rt-input.component.html',
     //styleUrls: ['rtForm.css']
 })
 

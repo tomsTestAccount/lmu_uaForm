@@ -2,17 +2,37 @@ import {Component, OnInit, HostListener, Input,Output, SimpleChanges, OnChanges,
 
 import {Validators, FormGroup,FormControl,FormBuilder} from '@angular/forms';
 
+//import { forbiddenNameValidator } from '../shared/forbidden-name.directive';
+
+//import { UserModel } from '../usermodel';
+
+//import { CountryList} from '../_models/countries';
+
+import {lmu_ua_formList} from'../_models/lmu_ua_formList';
+
 import { RtFormService ,cFormObject} from '../_services/rt-forms.service';
+
+//for animations
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate
+} from '@angular/core';
+
+
+//import { ViewContainerRef } from '@angular/core';
 
 //var html = require('./ua-apd.component.html!text');
 
 
 
 @Component({
-	//moduleId: module.id,
+	moduleId: module.id,
 	selector: `lmu_user_apd`,
 	templateUrl: 'ua-apd.component.html',
-  //  template:html,
+    //template:html,
 	//styleUrls: ['lmu-ua-styles.css']
 
 

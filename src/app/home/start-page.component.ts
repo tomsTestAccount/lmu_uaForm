@@ -13,7 +13,7 @@ import { Component,OnInit} from '@angular/core';
 //var css = require('./start-page.component.css!text');
 
 @Component({
-    ////moduleId: module.id,
+    moduleId: module.id,
     selector: 'startPage',
     //template:html,
     templateUrl: 'start-page.component.html',

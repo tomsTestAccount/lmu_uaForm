@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "migration-project"
+    "name": "lmu_uaForm",
+    "ejected": false
   },
   "apps": [
     {
@@ -15,14 +16,19 @@
       "main": "main.ts",
       "polyfills": "polyfills.ts",
       "tsconfig": "tsconfig.app.json",
+      "testTsconfig": "tsconfig.app.json",
       "prefix": "app",
       "styles": [
         "assets/css/styles.css",
         "assets/css/lmu-ua-styles.css",
         "assets/css/myBootstrap.css",
-        "assets/css/myMatStyles.css"
+        "assets/css/myMatStyles.css",
+        "assets/css/rtForm.css",
+        "assets/css/app.component.css"
+
       ],
-      "scripts": [],
+      "scripts": [
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
@@ -53,6 +59,7 @@
   },
   "defaults": {
     "styleExt": "css",
-    "component": {}
+    "component": {
+    }
   }
 }

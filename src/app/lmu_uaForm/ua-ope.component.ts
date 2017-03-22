@@ -25,7 +25,7 @@ import {
 //var html = require('./ua-ope.component.html!text');
 
 @Component({
-    //moduleId: module.id,
+    moduleId: module.id,
     selector: 'lmu_user_ope',
     templateUrl: 'ua-ope.component.html',
     //template:html

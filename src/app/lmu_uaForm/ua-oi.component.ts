@@ -19,7 +19,7 @@ import {
 //var html = require('./ua-oi.component.html!text');
 
 @Component({
-    ////moduleId: module.id,
+    moduleId: module.id,
     selector: 'lmu_user_oi',
     templateUrl: 'ua-oi.component.html',
     //template:html
